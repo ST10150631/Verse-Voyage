@@ -2,7 +2,7 @@ from dotenv import load_dotenv
 import os
 import base64
 import json
-from requests import post
+from requests import get, post
 load_dotenv()
 ## retrives the client data from the env file 
 client_id = os.getenv("Spotify_CLIENT_ID")
@@ -24,5 +24,23 @@ def get_token():
     token = json_result["access_token"]
     return token
 
-token = get_token()
-print(token)
+
+def get_auth_header(token):
+    print (token)
+    return {"Authorization": f"Bearer {token}"}
+
+def get_playlist(playlist_id, market):
+    url = f"https://api.spotify.com/v1/playlists/{playlist_id}?market={market}"  # URL of the API endpoint
+    token = get_token()  # Get the token
+    headers = get_auth_header(token)  # Get the Authorization header
+    result = get(url, headers=headers)  # Send GET request to the API
+
+    if result.status_code == 200:  # Check if request was successful
+        json_result = json.loads(result.content)  # Parse the JSON response
+        print(json_result)
+        return json_result
+    else:
+        print(f"Error: {result.status_code}")
+        return None
+
+get_playlist("1gttEp6fJBdgfuqu2Ap0Yk", "US")
