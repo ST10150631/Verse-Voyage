@@ -29,6 +29,7 @@ def get_auth_header(token):
     print (token)
     return {"Authorization": f"Bearer {token}"}
 
+
 def get_playlist(playlist_id, market):
     url = f"https://api.spotify.com/v1/playlists/{playlist_id}?market={market}"  # URL of the API endpoint
     token = get_token()  # Get the token
@@ -37,10 +38,26 @@ def get_playlist(playlist_id, market):
 
     if result.status_code == 200:  # Check if request was successful
         json_result = json.loads(result.content)  # Parse the JSON response
-        print(json_result)
+        
+        # Extracting tracks from the response
+        tracks = json_result["tracks"]["items"]
+        
+        # Iterate over each track to get the song name, artist names, and album name
+        for track in tracks:
+            song_name = track["track"]["name"]  # Song name
+            artists = ", ".join([artist["name"] for artist in track["track"]["artists"]])  # Artist names (joined as a string)
+            album_name = track["track"]["album"]["name"]  # Album name
+            
+            # Print the song, artists, and album
+            print(f"Song: {song_name}")
+            print(f"Artists: {artists}")
+            print(f"Album: {album_name}")
+            print("-" * 40)  # Just to separate each track visually
+            
         return json_result
     else:
         print(f"Error: {result.status_code}")
         return None
+
 
 get_playlist("1gttEp6fJBdgfuqu2Ap0Yk", "US")
